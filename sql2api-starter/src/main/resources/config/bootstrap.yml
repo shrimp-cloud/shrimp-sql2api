@@ -1,0 +1,6 @@
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log
+  level:
+    root: INFO
+    com.wkclz: INFO

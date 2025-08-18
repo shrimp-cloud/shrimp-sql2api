@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="spring.application.name" source="spring.application.name" defaultValue="default"/>
+    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%X{username:-nobody}|%-4level|%thread|%-36logger{36}|%-3L |%msg%n"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/${spring.application.name}.log</File>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${pattern}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>./logs/${spring.application.name}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <MaxFileSize>1024MB</MaxFileSize>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+    <springProfile name="local,dev,sit,uat,prod">
+        <root level="info">
+            <appender-ref ref="console"/>
+            <appender-ref ref="file"/>
+        </root>
+    </springProfile>
+</configuration>

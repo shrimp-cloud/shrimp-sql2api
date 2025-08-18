@@ -1,0 +1,98 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: shrimp-sql2api
+    group: shrimp
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 10MB
+  datasource:
+    druid:
+      initial-size: 1
+      max-active: 20
+      min-idle: 1
+      max-wait: 10000
+      validation-query: select 'x'
+      test-on-borrow: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 18800
+      filters: stat,wall
+  mvc:
+    format:
+      date: yyyy-MM-dd HH:mm:ss
+  jackson:
+    #日期格式化
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      #格式化输出
+      indent_output: true
+      #忽略无法转换的对象
+      fail_on_empty_beans: false
+    #设置空如何序列化
+    deserialization:
+      #允许对象忽略json中不存在的属性
+      fail_on_unknown_properties: false
+      accept-empty-string-as-null-object: true
+    parser:
+      #允许出现特殊字符和转义符
+      allow_unquoted_control_chars: true
+      #允许出现单引号
+      allow_single_quotes: true
+    default-property-inclusion: non_null
+
+
+##### client & service 公用配置 #####
+
+# Tomcat specifics
+server:
+  tomcat:
+    basedir: ./temp
+    background-processor-delay: 30s
+    accesslog:
+      enabled: false
+    remoteip:
+      port-header: x-forwarded-proto
+      remote-ip-header: x-forwarded-for
+
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  configuration:
+    lazy-loading-enabled: true
+    use-generated-keys: false
+    default-statement-timeout: 25
+    safe-row-bounds-enabled: false
+    map-underscore-to-camel-case: true
+
+
+# 参考：https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/zh/HowToUse.md
+pagehelper:
+  reasonable: true
+
+#### 系统建康状态 #####
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  server:
+    # 启用独立端口
+    port: 50000
+    base-path: /
+    ssl:
+      enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoint:
+    health:
+      showDetails: always
+      probes:
+        enabled: true
+    shutdown:
+      enabled: true
+    restart:
+      enabled: true
