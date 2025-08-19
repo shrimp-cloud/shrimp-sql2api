@@ -10,7 +10,7 @@ import java.util.Date;
  */
 
 @Data
-public class BaseEntity implements Serializable {
+public class SsBaseEntity implements Serializable {
 
     private Long id;
     private Integer sort;
