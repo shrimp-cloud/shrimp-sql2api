@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +42,10 @@ import java.util.regex.Pattern;
 @AutoConfigureAfter(SqlSession.class)
 public class DatabaseInitRunner implements ApplicationRunner {
 
+    @Autowired
+    private SqlSession sqlSession;
+    @Autowired
+    private DataSource dataSource;
     @Autowired
     private SchemaMapper schemaMapper;
     @Autowired
@@ -61,25 +67,25 @@ public class DatabaseInitRunner implements ApplicationRunner {
             return;
         }
 
+        // 筛选缺失的表
         List<String> tableNames = scripts.stream()
             .filter(t -> "ddl".equals(t.getType()))
             .map(SqlScriptInfo::getTableName)
             .toList();
 
-        // 筛选缺失的表
-        SqlSession sqlSession = SqpApiCtx.getBean(SqlSession.class);
-        List<String> existTables = getExistTables(sqlSession, tableNames);
-        List<String> notExistTables = tableNames.stream().filter(t -> !existTables.contains(t)).toList();
+        List<String> notExistTables = getNotExistTables(tableNames);
 
         // 表已追寻情况，将不会再创建表，和不再初始化数据
         if (CollectionUtils.isEmpty(notExistTables)) {
             return;
         }
 
+        log.info("init tables and data...");
         // 创建表
-        scripts.forEach(t -> execCreateTableDdl(sqlSession, t));
+        scripts.forEach(t -> execCreateTableDdl(t, notExistTables));
         // 数据入库
-        scripts.forEach(t -> execInsertDml(sqlSession, t, notExistTables));
+        scripts.forEach(t -> execInsertDml(t, notExistTables));
+        log.info("init tables and data  success!");
     }
 
     // 扫描所有脚本文件
@@ -96,7 +102,6 @@ public class DatabaseInitRunner implements ApplicationRunner {
                 infos.add(info);
                 String filename = resource.getFilename();
                 info.setFileName(filename);
-
                 info.setTableName(filename.substring(0, filename.indexOf(".")));
                 info.setType(filename.endsWith(".ddl.sql") ? "ddl" : "dml");
 
@@ -116,9 +121,9 @@ public class DatabaseInitRunner implements ApplicationRunner {
     }
 
     // 获取已经存在的表
-    private List<String> getExistTables(SqlSession sqlSession, List<String> tableNames) {
+    private List<String> getNotExistTables(List<String> tableNames) {
         TableInfoPo po = new TableInfoPo();
-        po.setTableSchema(getTableSchema(sqlSession));
+        po.setTableSchema(getTableSchema());
         po.setTableNames(tableNames);
         List<TableInfoPo> tables = schemaMapper.getTables(po);
         List<String> existTables = tables.stream().map(TableInfoPo::getTableName).toList();
@@ -126,11 +131,16 @@ public class DatabaseInitRunner implements ApplicationRunner {
     }
 
     // 获取数据库名
-    private String getTableSchema(SqlSession sqlSession) {
+    private String getTableSchema() {
         try {
-            Connection connection = sqlSession.getConnection();
-            return connection.getCatalog();
-            /*
+            Connection connection = dataSource.getConnection();
+            if (connection.isClosed()) {
+                throw new RuntimeException("数据库连接已关闭!");
+            }
+            String tableSchema = connection.getCatalog();
+            if (StringUtils.hasLength(tableSchema)) {
+                return tableSchema;
+            }
             DatabaseMetaData metaData = connection.getMetaData();
             String datasourceUrl = metaData.getURL();
             Pattern pattern = Pattern.compile("jdbc:mysql://[^/]+/([^ ?/]+)");
@@ -140,18 +150,20 @@ public class DatabaseInitRunner implements ApplicationRunner {
             } else {
                 throw new RuntimeException("未从数据库连接信息中发现数据库名,请联系开发者!");
             }
-            */
         } catch (SQLException e) {
             throw new RuntimeException("无法从默认数据源中获取数据库连接信息: " + e.getMessage());
         }
     }
 
     // 创建表
-    private void execCreateTableDdl(SqlSession sqlSession, SqlScriptInfo info) {
-        if (info == null || info.getTableName() == null || CollectionUtils.isEmpty(info.getScripts())) {
+    private void execCreateTableDdl(SqlScriptInfo info, List<String> notExistTables) {
+        if (info == null || !"ddl".equals(info.getType()) || CollectionUtils.isEmpty(info.getScripts())) {
             return;
         }
         String tableName = info.getTableName();
+        if (!notExistTables.contains(tableName)) {
+            return;
+        }
         String ddl = info.getScripts().getFirst();
         String md5 = DigestUtils.md5DigestAsHex(ddl.getBytes(StandardCharsets.UTF_8));
         String statementId = "dynamic.ddl." + tableName + "." + md5;
@@ -170,7 +182,7 @@ public class DatabaseInitRunner implements ApplicationRunner {
     }
 
     // 初始化数据
-    private void execInsertDml(SqlSession sqlSession, SqlScriptInfo info, List<String> notExistTables) {
+    private void execInsertDml(SqlScriptInfo info, List<String> notExistTables) {
         if (!"dml".equals(info.getType()) || CollectionUtils.isEmpty(info.getScripts())) {
             return;
         }
