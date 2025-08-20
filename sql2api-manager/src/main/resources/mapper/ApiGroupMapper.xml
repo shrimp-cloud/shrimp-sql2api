@@ -12,8 +12,8 @@
             api_group ag
         WHERE
             ag.`status` = 1
-            <if test="groupCode != null AND groupCode != ''">AND ag.group_code = #{groupCode}</if>
-            <if test="groupName != null AND groupName != ''">AND ag.group_name = #{groupName}</if>
+            <if test="groupCode != null and groupCode != ''">AND ag.group_code = #{groupCode}</if>
+            <if test="groupName != null and groupName != ''">AND ag.group_name = #{groupName}</if>
     </select>
     <select id="getApiGroupList"
             parameterType="com.wkclz.sql2api.manager.domain.dto.ApiGroupDto"
@@ -33,8 +33,8 @@
         api_group ag
       WHERE
         ag.`status` = 1
-        <if test="groupCode != null AND groupCode != ''">AND ag.group_code = #{groupCode}</if>
-        <if test="groupName != null AND groupName != ''">AND ag.group_name = #{groupName}</if>
+        <if test="groupCode != null and groupCode != ''">AND ag.group_code = #{groupCode}</if>
+        <if test="groupName != null and groupName != ''">AND ag.group_name = #{groupName}</if>
       ORDER BY
         ag.sort ASC,
         ag.id ASC
