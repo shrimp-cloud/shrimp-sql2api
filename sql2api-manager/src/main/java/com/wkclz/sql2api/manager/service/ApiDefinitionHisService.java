@@ -1,20 +1,16 @@
 package com.wkclz.sql2api.manager.service;
 
-import com.wkclz.sql2api.manager.domain.base.Result;
-import com.wkclz.sql2api.manager.rest.Routes;
+import com.wkclz.sql2api.engine.domain.base.SaResult;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Service
 public class ApiDefinitionHisService {
 
-    public Result definitionHisPage() {
-        return Result.ok();
+    public SaResult definitionHisPage() {
+        return SaResult.ok();
     }
-    public Result definitionHisDetail() {
-        return Result.ok();
+    public SaResult definitionHisDetail() {
+        return SaResult.ok();
     }
 
 }

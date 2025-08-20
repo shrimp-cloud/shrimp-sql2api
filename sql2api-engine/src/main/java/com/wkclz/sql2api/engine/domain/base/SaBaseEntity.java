@@ -1,4 +1,4 @@
-package com.wkclz.sql2api.manager.domain.base;
+package com.wkclz.sql2api.engine.domain.base;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.util.Date;
  */
 
 @Data
-public class SsBaseEntity implements Serializable {
+public class SaBaseEntity implements Serializable {
 
     // 基本字段
     private Long id;
@@ -26,5 +26,16 @@ public class SsBaseEntity implements Serializable {
     private Long current;
     private Long size;
     private Long offset;
-    protected Long total;
+    private Long page;
+
+
+    public void init() {
+        if (this.current == null || this.current < 1) {
+            this.current = 1L;
+        }
+        if (this.size == null || this.size < 1) {
+            this.size = 20L;
+        }
+        this.offset = (this.current -1 ) * this.size;
+    }
 }

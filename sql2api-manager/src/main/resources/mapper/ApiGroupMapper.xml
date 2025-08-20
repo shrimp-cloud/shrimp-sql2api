@@ -5,7 +5,7 @@
 
     <select id="getApiGroupCount"
             parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup"
-            resultType="java.lang.Integer">
+            resultType="java.lang.Long">
         SELECT
             COUNT(*) count
         FROM

@@ -1,10 +1,10 @@
 package com.wkclz.sql2api.manager.domain.entity;
 
-import com.wkclz.sql2api.manager.domain.base.SsBaseEntity;
+import com.wkclz.sql2api.engine.domain.base.SaBaseEntity;
 import lombok.Data;
 
 @Data
-public class ApiDefinitionParam extends SsBaseEntity {
+public class ApiDefinitionParam extends SaBaseEntity {
 
     private String apiCode;
     private String fieldName;

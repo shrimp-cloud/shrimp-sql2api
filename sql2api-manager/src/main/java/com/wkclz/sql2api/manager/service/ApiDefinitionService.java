@@ -4,20 +4,22 @@ import com.wkclz.sql2api.engine.domain.base.SaResult;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ApiDefinitionParamService {
+public class ApiDefinitionService {
 
-    public SaResult definitionParamList() {
+    public SaResult definitionPage() {
         return SaResult.ok();
     }
-    public SaResult definitionParamCreate() {
+    public SaResult definitionDetail() {
         return SaResult.ok();
     }
-    public SaResult definitionParamUpdate() {
+    public SaResult definitionCreate() {
         return SaResult.ok();
     }
-    public SaResult definitionParamDelete() {
+    public SaResult definitionUpdate() {
         return SaResult.ok();
     }
-
+    public SaResult definitionDelete() {
+        return SaResult.ok();
+    }
 
 }

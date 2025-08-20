@@ -1,4 +1,4 @@
-package com.wkclz.sql2api.manager.domain.base;
+package com.wkclz.sql2api.engine.domain.base;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 
 @Data
-public class Result<T> implements Serializable {
+public class SaResult<T> implements Serializable {
 
     private Integer code = -1;
 
@@ -29,22 +29,22 @@ public class Result<T> implements Serializable {
         return null;
     }
 
-    public static Result data(Object data) {
-        Result result = new Result();
+    public static SaResult data(Object data) {
+        SaResult result = new SaResult();
         result.data = data;
         result.code = 1;
         return result;
     }
 
-    public static Result ok() {
-        Result result = new Result();
+    public static SaResult ok() {
+        SaResult result = new SaResult();
         result.data = true;
         result.code = 1;
         return result;
     }
 
-    public static Result error(String msg) {
-        Result result = new Result();
+    public static SaResult error(String msg) {
+        SaResult result = new SaResult();
         result.msg = msg;
         result.code = -1;
         return result;

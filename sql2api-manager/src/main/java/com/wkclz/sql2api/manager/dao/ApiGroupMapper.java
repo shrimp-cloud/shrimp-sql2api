@@ -9,7 +9,7 @@ import java.util.List;
 public interface ApiGroupMapper {
 
     // 分页
-    Integer getApiGroupCount(ApiGroupDto dto);
+    Long getApiGroupCount(ApiGroupDto dto);
     List<ApiGroupDto> getApiGroupList(ApiGroupDto dto);
 
 }
