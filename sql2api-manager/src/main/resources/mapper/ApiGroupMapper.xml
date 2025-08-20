@@ -3,5 +3,44 @@
 <mapper namespace="com.wkclz.sql2api.manager.dao.ApiGroupMapper">
 
 
+    <select id="getApiGroupCount"
+            parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup"
+            resultType="java.lang.Integer">
+        SELECT
+            COUNT(*) count
+        FROM
+            api_group ag
+        WHERE
+            ag.`status` = 1
+            <if test="groupCode != null AND groupCode != ''">AND ag.group_code = #{groupCode}</if>
+            <if test="groupName != null AND groupName != ''">AND ag.group_name = #{groupName}</if>
+    </select>
+    <select id="getApiGroupList"
+            parameterType="com.wkclz.sql2api.manager.domain.dto.ApiGroupDto"
+            resultType="com.wkclz.sql2api.manager.domain.dto.ApiGroupDto">
+      SELECT
+        ag.id,
+        ag.group_code,
+        ag.group_name,
+        ag.sort,
+        ag.create_time,
+        ag.create_by,
+        ag.update_time,
+        ag.update_by,
+        ag.remark,
+        ag.version
+      FROM
+        api_group ag
+      WHERE
+        ag.`status` = 1
+        <if test="groupCode != null AND groupCode != ''">AND ag.group_code = #{groupCode}</if>
+        <if test="groupName != null AND groupName != ''">AND ag.group_name = #{groupName}</if>
+      ORDER BY
+        ag.sort ASC,
+        ag.id ASC
+      LIMIT
+        #{offset}, #{size}
+    </select>
+
 </mapper>
 

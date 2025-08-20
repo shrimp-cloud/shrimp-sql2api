@@ -12,6 +12,7 @@ import java.util.Date;
 @Data
 public class SsBaseEntity implements Serializable {
 
+    // 基本字段
     private Long id;
     private Integer sort;
     private Date createTime;
@@ -20,4 +21,10 @@ public class SsBaseEntity implements Serializable {
     private String updateBy;
     private String remark;
     private Integer version;
+
+   // 分页
+    private Long current;
+    private Long size;
+    private Long offset;
+    protected Long total;
 }
