@@ -1,25 +1,51 @@
 package com.wkclz.sql2api.manager.service;
 
-import com.wkclz.sql2api.engine.domain.base.SaResult;
+import com.wkclz.sql2api.engine.domain.base.SaPageData;
+import com.wkclz.sql2api.manager.dao.ApiDefinitionMapper;
+import com.wkclz.sql2api.manager.domain.dto.ApiDefinitionDto;
+import com.wkclz.sql2api.manager.domain.entity.ApiDefinition;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author shrimp
+ */
 @Service
 public class ApiDefinitionService {
 
-    public SaResult definitionPage() {
-        return SaResult.ok();
+
+    @Resource
+    private ApiDefinitionMapper apDefinitionMapper;
+
+    public SaPageData<ApiDefinitionDto> definitionPage(ApiDefinitionDto dto) {
+        Long count = apDefinitionMapper.getCount(dto);
+        List<ApiDefinitionDto> rows;
+        if (count > 0) {
+            dto.init();
+            rows = apDefinitionMapper.getList(dto);
+        } else {
+            rows = new ArrayList<>();
+        }
+        return SaPageData.newInstance(dto.getCurrent(), dto.getSize(), count, rows);
     }
-    public SaResult definitionDetail() {
-        return SaResult.ok();
+
+    public ApiDefinition definitionDetail(Long id) {
+        return apDefinitionMapper.getById(id);
     }
-    public SaResult definitionCreate() {
-        return SaResult.ok();
+    public ApiDefinition definitionCreate(ApiDefinition entity) {
+        apDefinitionMapper.insert(entity);
+        return entity;
     }
-    public SaResult definitionUpdate() {
-        return SaResult.ok();
+    public ApiDefinition definitionUpdate(ApiDefinition entity) {
+        apDefinitionMapper.update(entity);
+        return entity;
     }
-    public SaResult definitionDelete() {
-        return SaResult.ok();
+    public Integer definitionDelete(ApiDefinition entity) {
+        return apDefinitionMapper.delete(entity);
     }
+
 
 }
