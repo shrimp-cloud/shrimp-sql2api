@@ -1,9 +1,9 @@
 package com.wkclz.sql2api.manager.service;
 
 import com.wkclz.sql2api.engine.domain.base.SaPageData;
-import com.wkclz.sql2api.engine.domain.base.SaResult;
 import com.wkclz.sql2api.manager.dao.ApiGroupMapper;
 import com.wkclz.sql2api.manager.domain.dto.ApiGroupDto;
+import com.wkclz.sql2api.manager.domain.entity.ApiGroup;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -20,28 +20,30 @@ public class ApiGroupService {
     private ApiGroupMapper apiGroupMapper;
 
     public SaPageData<ApiGroupDto> groupPage(ApiGroupDto dto) {
-        Long count = apiGroupMapper.getApiGroupCount(dto);
+        Long count = apiGroupMapper.getCount(dto);
         List<ApiGroupDto> rows;
         if (count > 0) {
             dto.init();
-            rows = apiGroupMapper.getApiGroupList(dto);
+            rows = apiGroupMapper.getList(dto);
         } else {
             rows = new ArrayList<>();
         }
         return SaPageData.newInstance(dto.getCurrent(), dto.getSize(), count, rows);
     }
 
-    public SaResult groupDetail() {
-        return SaResult.ok();
+    public ApiGroup groupDetail(Long id) {
+        return apiGroupMapper.getById(id);
     }
-    public SaResult groupCreate() {
-        return SaResult.ok();
+    public ApiGroup groupCreate(ApiGroup entity) {
+        apiGroupMapper.insert(entity);
+        return entity;
     }
-    public SaResult groupUpdate() {
-        return SaResult.ok();
+    public ApiGroup groupUpdate(ApiGroup entity) {
+        apiGroupMapper.update(entity);
+        return entity;
     }
-    public SaResult groupDelete() {
-        return SaResult.ok();
+    public Integer groupDelete(ApiGroup entity) {
+        return apiGroupMapper.delete(entity);
     }
 
 }

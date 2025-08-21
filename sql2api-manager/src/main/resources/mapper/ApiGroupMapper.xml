@@ -3,43 +3,139 @@
 <mapper namespace="com.wkclz.sql2api.manager.dao.ApiGroupMapper">
 
 
-    <select id="getApiGroupCount"
+    <select id="getCount"
             parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup"
             resultType="java.lang.Long">
         SELECT
             COUNT(*) count
         FROM
-            api_group ag
+            api_group
         WHERE
             ag.`status` = 1
-            <if test="groupCode != null and groupCode != ''">AND ag.group_code = #{groupCode}</if>
-            <if test="groupName != null and groupName != ''">AND ag.group_name = #{groupName}</if>
+            <if test="groupCode != null and groupCode != ''">AND group_code = #{groupCode}</if>
+            <if test="groupName != null and groupName != ''">AND group_name = #{groupName}</if>
     </select>
-    <select id="getApiGroupList"
+
+    <select id="getList"
             parameterType="com.wkclz.sql2api.manager.domain.dto.ApiGroupDto"
             resultType="com.wkclz.sql2api.manager.domain.dto.ApiGroupDto">
       SELECT
-        ag.id,
-        ag.group_code,
-        ag.group_name,
-        ag.sort,
-        ag.create_time,
-        ag.create_by,
-        ag.update_time,
-        ag.update_by,
-        ag.remark,
-        ag.version
+        id,
+        group_code,
+        group_name,
+        sort,
+        create_time,
+        create_by,
+        update_time,
+        update_by,
+        remark,
+        version
       FROM
-        api_group ag
+        api_group
       WHERE
-        ag.`status` = 1
-        <if test="groupCode != null and groupCode != ''">AND ag.group_code = #{groupCode}</if>
-        <if test="groupName != null and groupName != ''">AND ag.group_name = #{groupName}</if>
+        `status` = 1
+        <if test="groupCode != null and groupCode != ''">AND group_code = #{groupCode}</if>
+        <if test="groupName != null and groupName != ''">AND group_name = #{groupName}</if>
       ORDER BY
-        ag.sort ASC,
-        ag.id ASC
+        sort ASC,
+        id ASC
       LIMIT
         #{offset}, #{size}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.wkclz.sql2api.manager.domain.entity.ApiGroup">
+      SELECT
+        id,
+        group_code,
+        group_name,
+        sort,
+        create_time,
+        create_by,
+        update_time,
+        update_by,
+        remark,
+        version
+      FROM
+        api_group
+      WHERE
+        `status` = 1
+        AND id = #{id}
+    </select>
+
+    <!-- insert (选择性)插入 -->
+    <insert id="insert" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO api_group (
+          <trim suffixOverrides=",">
+            <if test="groupCode != null">group_code, </if>
+            <if test="groupName != null">group_name, </if>
+
+            <if test="sort != null">sort, </if>
+            <if test="createBy != null">create_by, </if>
+            <if test="updateBy != null">update_by, </if>
+            <if test="remark != null">remark, </if>
+          </trim>
+        ) VALUES (
+          <trim suffixOverrides=",">
+            <if test="groupCode != null">#{groupCode}, </if>
+            <if test="groupName != null">#{groupName}, </if>
+
+            <if test="sort != null">#{sort}, </if>
+            <if test="createBy != null">#{createBy}, </if>
+            <if test="updateBy != null">#{updateBy}, </if>
+            <if test="remark != null">#{remark}, </if>
+            <if test="version != null">#{version}, </if>
+          </trim>
+        )
+    </insert>
+
+    <!-- update 选择性更新(带乐观锁) -->
+    <update id="update" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup">
+        UPDATE
+          api_group
+        SET
+          <trim suffixOverrides=",">
+            <if test="groupCode != null">group_code = #{groupCode}, </if>
+            <if test="groupName != null">group_name = #{groupName}, </if>
+
+            <if test="sort != null">sort = #{sort}, </if>
+            <if test="createBy != null">create_by = #{createBy}, </if>
+            <if test="updateBy != null">update_by = #{updateBy}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="version != null">version = version + 1, </if>
+          </trim>
+        WHERE
+          `status` = 1
+          AND id = #{id}
+          AND version = #{version}
+    </update>
+
+    <!-- delete (逻辑)删除 -->
+    <update id="delete" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiGroup">
+      UPDATE api_group
+      SET
+        `status` = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m'),
+        version = version + 1,
+        update_by = #{updateBy}
+      WHERE
+        `status` = 1
+        AND id = #{id}
+    </update>
+
+    <select id="getOptions"
+            resultType="com.wkclz.sql2api.manager.domain.entity.ApiGroup">
+        SELECT
+          group_code,
+          group_name
+        FROM
+          api_group
+        WHERE
+          `status` = 1
+        ORDER BY
+          sort ASC,
+          id ASC
     </select>
 
 </mapper>

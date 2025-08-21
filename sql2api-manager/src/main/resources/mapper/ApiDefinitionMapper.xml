@@ -3,5 +3,171 @@
 <mapper namespace="com.wkclz.sql2api.manager.dao.ApiDefinitionMapper">
 
 
+    <select id="getCount"
+            parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinition"
+            resultType="java.lang.Long">
+        SELECT
+            COUNT(*) count
+        FROM
+            api_definition
+        WHERE
+            `status` = 1
+
+            <if test="groupCode != null">AND group_code = #{groupCode}</if>
+            <if test="apiCode != null">AND api_code LIKE CONCAT('%', #{apiCode}, '%') </if>
+            <if test="apiName != null">AND api_name LIKE CONCAT('%', #{apiName}, '%') </if>
+            <if test="apiMethod != null">AND api_method = #{apiMethod} </if>
+            <if test="apiUri != null">AND api_uri LIKE CONCAT('%', #{apiUri}, '%') </if>
+            <if test="resultType != null">AND result_type = #{resultType} </if>
+            <if test="enableFlag != null">AND enable_flag = #{enableFlag} </if>
+    </select>
+
+    <select id="getList"
+            parameterType="com.wkclz.sql2api.manager.domain.dto.ApiDefinitionDto"
+            resultType="com.wkclz.sql2api.manager.domain.dto.ApiDefinitionDto">
+        SELECT
+            id,
+            group_code,
+            api_code,
+            api_name,
+            api_method,
+            api_uri,
+            result_type,
+            enable_flag,
+            hump_conversion_switch,
+            sort,
+            create_time,
+            create_by,
+            update_time,
+            update_by,
+            remark,
+            version
+        FROM
+            api_definition
+        WHERE
+            `status` = 1
+            <if test="groupCode != null">AND group_code = #{groupCode}</if>
+            <if test="apiCode != null">AND api_code LIKE CONCAT('%', #{apiCode}, '%') </if>
+            <if test="apiName != null">AND api_name LIKE CONCAT('%', #{apiName}, '%') </if>
+            <if test="apiMethod != null">AND api_method = #{apiMethod} </if>
+            <if test="apiUri != null">AND api_uri LIKE CONCAT('%', #{apiUri}, '%') </if>
+            <if test="resultType != null">AND result_type = #{resultType} </if>
+            <if test="enableFlag != null">AND enable_flag = #{enableFlag} </if>
+        ORDER BY
+            sort ASC,
+            id ASC
+        LIMIT
+            #{offset}, #{size}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.wkclz.sql2api.manager.domain.entity.ApiDefinition">
+        SELECT
+            id,
+            group_code,
+            api_code,
+            api_name,
+            api_method,
+            api_uri,
+            result_type,
+            enable_flag,
+            hump_conversion_switch,
+            api_script,
+            api_script_count,
+            sort,
+            create_time,
+            create_by,
+            update_time,
+            update_by,
+            remark,
+            version
+        FROM
+            api_definition
+        WHERE
+            `status` = 1
+            AND id = #{id}
+    </select>
+
+    <!-- insert (选择性)插入 -->
+    <insert id="insert" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinition">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO api_definition (
+        <trim suffixOverrides=",">
+            <if test="groupCode != null">group_code, </if>
+            <if test="apiCode != null">api_code, </if>
+            <if test="apiName != null">api_name, </if>
+            <if test="apiMethod != null">api_method, </if>
+            <if test="apiUri != null">api_uri, </if>
+            <if test="resultType != null">result_type, </if>
+            <if test="enableFlag != null">enable_flag, </if>
+            <if test="apiScript != null">api_script, </if>
+            <if test="apiScriptCount != null">api_script_count, </if>
+
+            <if test="sort != null">sort, </if>
+            <if test="createBy != null">create_by, </if>
+            <if test="updateBy != null">update_by, </if>
+            <if test="remark != null">remark, </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="groupCode != null">#{groupCode}, </if>
+            <if test="apiCode != null">#{apiCode}, </if>
+            <if test="fieldName != null">#{fieldName}, </if>
+            <if test="fieldType != null">#{fieldType}, </if>
+            <if test="placeholder != null">#{placeholder}, </if>
+            <if test="required != null">#{required}, </if>
+            <if test="dictType != null">#{dictType}, </if>
+            <if test="validateScript != null">#{validateScript}, </if>
+
+            <if test="sort != null">#{sort}, </if>
+            <if test="createBy != null">#{createBy}, </if>
+            <if test="updateBy != null">#{updateBy}, </if>
+            <if test="remark != null">#{remark}, </if>
+            <if test="version != null">#{version}, </if>
+        </trim>
+        )
+    </insert>
+
+    <!-- update 选择性更新(带乐观锁) -->
+    <update id="update" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinition">
+        UPDATE
+        api_definition
+        SET
+        <trim suffixOverrides=",">
+            <if test="groupCode != null">group_code = #{groupCode}, </if>
+            <if test="apiCode != null">api_code = #{apiCode}, </if>
+            <if test="fieldName != null">field_name = #{fieldName}, </if>
+            <if test="fieldType != null">field_type = #{fieldType}, </if>
+            <if test="placeholder != null">placeholder = #{placeholder}, </if>
+            <if test="required != null">required = #{required}, </if>
+            <if test="dictType != null">dict_type = #{dictType}, </if>
+            <if test="validateScript != null">validate_script = #{validateScript}, </if>
+
+            <if test="sort != null">sort = #{sort}, </if>
+            <if test="createBy != null">create_by = #{createBy}, </if>
+            <if test="updateBy != null">update_by = #{updateBy}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="version != null">version = version + 1, </if>
+        </trim>
+        WHERE
+        `status` = 1
+        AND id = #{id}
+        AND version = #{version}
+    </update>
+
+    <!-- delete (逻辑)删除 -->
+    <update id="delete" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinition">
+        UPDATE api_definition
+        SET
+            `status` = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m'),
+            version = version + 1,
+            update_by = #{updateBy}
+        WHERE
+            `status` = 1
+            AND id = #{id}
+    </update>
+
+
 </mapper>
 

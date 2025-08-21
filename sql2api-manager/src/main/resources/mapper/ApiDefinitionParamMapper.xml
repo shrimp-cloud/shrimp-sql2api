@@ -2,6 +2,139 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wkclz.sql2api.manager.dao.ApiDefinitionParamMapper">
 
+    <select id="getList"
+            parameterType="com.wkclz.sql2api.manager.domain.dto.ApiDefinitionParamDto"
+            resultType="com.wkclz.sql2api.manager.domain.dto.ApiDefinitionParamDto">
+        SELECT
+            id,
+            api_code,
+            field_name,
+            field_type,
+            placeholder,
+            required,
+            dict_type,
+            sort,
+            create_time,
+            create_by,
+            update_time,
+            update_by,
+            remark,
+            version
+        FROM
+            api_definition
+        WHERE
+            `status` = 1
+            AND api_code = #{apiCode}
+            <if test="fieldName != null">AND field_name LIKE CONCAT('%', #{fieldName}, '%') </if>
+            <if test="fieldType != null">AND field_type = #{fieldType} </if>
+            <if test="required != null">AND required = #{required} </if>
+            <if test="dictType != null">AND dict_type = #{dictType} </if>
+        ORDER BY
+            sort ASC,
+            id ASC
+        LIMIT
+            #{offset}, #{size}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.wkclz.sql2api.manager.domain.entity.ApiDefinitionParam">
+        SELECT
+            id,
+            api_code,
+            field_name,
+            field_type,
+            placeholder,
+            required,
+            dict_type,
+            sort,
+            create_time,
+            create_by,
+            update_time,
+            update_by,
+            remark,
+            version
+        FROM
+            api_definition
+        WHERE
+            `status` = 1
+            AND id = #{id}
+    </select>
+
+    <!-- insert (选择性)插入 -->
+    <insert id="insert" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinitionParam">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO api_definition (
+        <trim suffixOverrides=",">
+            <if test="apiCode != null">api_code, </if>
+            <if test="fieldName != null">field_name, </if>
+            <if test="fieldType != null">field_type, </if>
+            <if test="placeholder != null">placeholder, </if>
+            <if test="required != null">required, </if>
+            <if test="dictType != null">dict_type, </if>
+            <if test="validateScript != null">validate_script, </if>
+
+            <if test="sort != null">sort, </if>
+            <if test="createBy != null">create_by, </if>
+            <if test="updateBy != null">update_by, </if>
+            <if test="remark != null">remark, </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="apiCode != null">#{apiCode}, </if>
+            <if test="fieldName != null">#{fieldName}, </if>
+            <if test="fieldType != null">#{fieldType}, </if>
+            <if test="placeholder != null">#{placeholder}, </if>
+            <if test="required != null">#{required}, </if>
+            <if test="dictType != null">#{dictType}, </if>
+            <if test="validateScript != null">#{validateScript}, </if>
+
+            <if test="sort != null">#{sort}, </if>
+            <if test="createBy != null">#{createBy}, </if>
+            <if test="updateBy != null">#{updateBy}, </if>
+            <if test="remark != null">#{remark}, </if>
+            <if test="version != null">#{version}, </if>
+        </trim>
+        )
+    </insert>
+
+    <!-- update 选择性更新(带乐观锁) -->
+    <update id="update" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinitionParam">
+        UPDATE
+            api_definition
+        SET
+        <trim suffixOverrides=",">
+            <if test="apiCode != null">api_code = #{apiCode}, </if>
+            <if test="fieldName != null">field_name = #{fieldName}, </if>
+            <if test="fieldType != null">field_type = #{fieldType}, </if>
+            <if test="placeholder != null">placeholder = #{placeholder}, </if>
+            <if test="required != null">required = #{required}, </if>
+            <if test="dictType != null">dict_type = #{dictType}, </if>
+            <if test="validateScript != null">validate_script = #{validateScript}, </if>
+
+            <if test="sort != null">sort = #{sort}, </if>
+            <if test="createBy != null">create_by = #{createBy}, </if>
+            <if test="updateBy != null">update_by = #{updateBy}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="version != null">version = version + 1, </if>
+        </trim>
+        WHERE
+            `status` = 1
+            AND id = #{id}
+            AND version = #{version}
+    </update>
+
+    <!-- delete (逻辑)删除 -->
+    <update id="delete" parameterType="com.wkclz.sql2api.manager.domain.entity.ApiDefinitionParam">
+        UPDATE api_definition
+        SET
+            `status` = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m'),
+            version = version + 1,
+            update_by = #{updateBy}
+        WHERE
+            `status` = 1
+            AND id = #{id}
+    </update>
 
 </mapper>
 
